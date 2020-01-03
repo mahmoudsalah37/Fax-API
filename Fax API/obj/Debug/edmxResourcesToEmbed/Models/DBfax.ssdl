@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="faxModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="main_class">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="person">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="id_rank" Type="int" />
+    <Property Name="name" Type="nvarchar(max)" />
+    <Property Name="description" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="rank">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar(max)" />
+    <Property Name="description" Type="nvarchar(max)" />
+  </EntityType>
+  <EntityType Name="sub_class">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar(max)" />
+    <Property Name="id_main_class" Type="int" />
+  </EntityType>
+  <Association Name="FK_person_person">
+    <End Role="rank" Type="Self.rank" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="person" Type="Self.person" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="rank">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="person">
+        <PropertyRef Name="id_rank" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_sub_class_sub_class">
+    <End Role="main_class" Type="Self.main_class" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="sub_class" Type="Self.sub_class" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="main_class">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="sub_class">
+        <PropertyRef Name="id_main_class" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="faxModelStoreContainer">
+    <EntitySet Name="main_class" EntityType="Self.main_class" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="person" EntityType="Self.person" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="rank" EntityType="Self.rank" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="sub_class" EntityType="Self.sub_class" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_person_person" Association="Self.FK_person_person">
+      <End Role="rank" EntitySet="rank" />
+      <End Role="person" EntitySet="person" />
+    </AssociationSet>
+    <AssociationSet Name="FK_sub_class_sub_class" Association="Self.FK_sub_class_sub_class">
+      <End Role="main_class" EntitySet="main_class" />
+      <End Role="sub_class" EntitySet="sub_class" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

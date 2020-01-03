@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="faxModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="main_class">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="sub_class" Relationship="Self.FK_sub_class_sub_class" FromRole="main_class" ToRole="sub_class" />
+  </EntityType>
+  <EntityType Name="person">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="id_rank" Type="Int32" />
+    <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="rank" Relationship="Self.FK_person_person" FromRole="person" ToRole="rank" />
+  </EntityType>
+  <EntityType Name="rank">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="people" Relationship="Self.FK_person_person" FromRole="rank" ToRole="person" />
+  </EntityType>
+  <EntityType Name="sub_class">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="id_main_class" Type="Int32" />
+    <NavigationProperty Name="main_class" Relationship="Self.FK_sub_class_sub_class" FromRole="sub_class" ToRole="main_class" />
+  </EntityType>
+  <Association Name="FK_sub_class_sub_class">
+    <End Role="main_class" Type="Self.main_class" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="sub_class" Type="Self.sub_class" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="main_class">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="sub_class">
+        <PropertyRef Name="id_main_class" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_person_person">
+    <End Role="rank" Type="Self.rank" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="person" Type="Self.person" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="rank">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="person">
+        <PropertyRef Name="id_rank" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="faxEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="main_class" EntityType="Self.main_class" />
+    <EntitySet Name="people" EntityType="Self.person" />
+    <EntitySet Name="ranks" EntityType="Self.rank" />
+    <EntitySet Name="sub_class" EntityType="Self.sub_class" />
+    <AssociationSet Name="FK_sub_class_sub_class" Association="Self.FK_sub_class_sub_class">
+      <End Role="main_class" EntitySet="main_class" />
+      <End Role="sub_class" EntitySet="sub_class" />
+    </AssociationSet>
+    <AssociationSet Name="FK_person_person" Association="Self.FK_person_person">
+      <End Role="rank" EntitySet="ranks" />
+      <End Role="person" EntitySet="people" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
