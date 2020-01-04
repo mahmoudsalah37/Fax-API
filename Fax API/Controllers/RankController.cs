@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
@@ -11,7 +12,7 @@ namespace Fax_API.Controllers
 {
     public class RankController : ApiController
     {
-        private faxEntities db = new faxEntities();
+        private DBfax db = new DBfax();
 
         // GET: api/Rank
         public IQueryable<rank> Getranks()
@@ -84,17 +85,20 @@ namespace Fax_API.Controllers
 
         // DELETE: api/Rank/5
         [ResponseType(typeof(rank))]
-        public async Task<IHttpActionResult> Deleterank(int id)
+        public async Task<IHttpActionResult> Deleterank([FromUri]IEnumerable<int> ids)
         {
-            rank rank = await db.ranks.FindAsync(id);
-            if (rank == null)
+            rank rank = null;
+            foreach (int id in ids)
             {
-                return NotFound();
+                rank = await db.ranks.FindAsync(id);
+                if (rank == null)
+                {
+                    return NotFound();
+                }
+
+                db.ranks.Remove(rank);
             }
-
-            db.ranks.Remove(rank);
             await db.SaveChangesAsync();
-
             return Ok(rank);
         }
 

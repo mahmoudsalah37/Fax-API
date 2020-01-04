@@ -5,6 +5,33 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="faxModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="fax">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="title" Type="nvarchar(max)" />
+          <Property Name="name_send" Type="nvarchar(max)" />
+          <Property Name="name_recieve" Type="nvarchar(max)" />
+          <Property Name="from_date" Type="date" />
+          <Property Name="to_date" Type="date" />
+          <Property Name="serial_fax" Type="int" />
+          <Property Name="serial_fax_auto" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sub_class_id" Type="int" />
+          <Property Name="person_send_id" Type="int" />
+          <Property Name="person_recieve_id" Type="int" />
+          <Property Name="is_export" Type="bit" />
+        </EntityType>
+        <EntityType Name="iamges">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" />
+          <Property Name="name" Type="nvarchar(max)" />
+          <Property Name="type" Type="nvarchar(max)" />
+          <Property Name="size" Type="float" />
+          <Property Name="fax_id" Type="int" />
+        </EntityType>
         <EntityType Name="main_class">
           <Key>
             <PropertyRef Name="id" />
@@ -37,6 +64,54 @@
           <Property Name="name" Type="nvarchar(max)" />
           <Property Name="id_main_class" Type="int" />
         </EntityType>
+        <Association Name="FK_fax_person">
+          <End Role="person" Type="Self.person" Multiplicity="0..1" />
+          <End Role="fax" Type="Self.fax" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fax">
+              <PropertyRef Name="person_send_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_fax_person1">
+          <End Role="person" Type="Self.person" Multiplicity="0..1" />
+          <End Role="fax" Type="Self.fax" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fax">
+              <PropertyRef Name="person_recieve_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_fax_sub_class">
+          <End Role="sub_class" Type="Self.sub_class" Multiplicity="0..1" />
+          <End Role="fax" Type="Self.fax" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="sub_class">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fax">
+              <PropertyRef Name="sub_class_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_iamges_fax">
+          <End Role="fax" Type="Self.fax" Multiplicity="0..1" />
+          <End Role="iamges" Type="Self.iamges" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="fax">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="iamges">
+              <PropertyRef Name="fax_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_person_person">
           <End Role="rank" Type="Self.rank" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -66,10 +141,28 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="faxModelStoreContainer">
+          <EntitySet Name="fax" EntityType="Self.fax" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="iamges" EntityType="Self.iamges" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="main_class" EntityType="Self.main_class" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="person" EntityType="Self.person" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="rank" EntityType="Self.rank" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="sub_class" EntityType="Self.sub_class" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_fax_person" Association="Self.FK_fax_person">
+            <End Role="person" EntitySet="person" />
+            <End Role="fax" EntitySet="fax" />
+          </AssociationSet>
+          <AssociationSet Name="FK_fax_person1" Association="Self.FK_fax_person1">
+            <End Role="person" EntitySet="person" />
+            <End Role="fax" EntitySet="fax" />
+          </AssociationSet>
+          <AssociationSet Name="FK_fax_sub_class" Association="Self.FK_fax_sub_class">
+            <End Role="sub_class" EntitySet="sub_class" />
+            <End Role="fax" EntitySet="fax" />
+          </AssociationSet>
+          <AssociationSet Name="FK_iamges_fax" Association="Self.FK_iamges_fax">
+            <End Role="fax" EntitySet="fax" />
+            <End Role="iamges" EntitySet="iamges" />
+          </AssociationSet>
           <AssociationSet Name="FK_person_person" Association="Self.FK_person_person">
             <End Role="rank" EntitySet="rank" />
             <End Role="person" EntitySet="person" />
@@ -89,7 +182,6 @@
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="sub_class" Relationship="Self.FK_sub_class_sub_class" FromRole="main_class" ToRole="sub_class" />
         </EntityType>
         <EntityType Name="person">
           <Key>
@@ -100,7 +192,7 @@
           <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="rank" Relationship="Self.FK_person_person" FromRole="person" ToRole="rank" />
-        </EntityType>
+          </EntityType>
         <EntityType Name="rank">
           <Key>
             <PropertyRef Name="id" />
@@ -108,7 +200,6 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="people" Relationship="Self.FK_person_person" FromRole="rank" ToRole="person" />
         </EntityType>
         <EntityType Name="sub_class">
           <Key>
@@ -147,7 +238,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="faxEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="DBfax" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="main_class" EntityType="Self.main_class" />
           <EntitySet Name="people" EntityType="Self.person" />
           <EntitySet Name="ranks" EntityType="Self.rank" />
@@ -160,13 +251,110 @@
             <End Role="rank" EntitySet="ranks" />
             <End Role="person" EntitySet="people" />
           </AssociationSet>
+          <EntitySet Name="faxes" EntityType="faxModel.fax" />
+          <EntitySet Name="iamges" EntityType="faxModel.iamge" />
+          <AssociationSet Name="FK_fax_person" Association="faxModel.FK_fax_person">
+            <End Role="person" EntitySet="people" />
+            <End Role="fax" EntitySet="faxes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_fax_person1" Association="faxModel.FK_fax_person1">
+            <End Role="person" EntitySet="people" />
+            <End Role="fax" EntitySet="faxes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_fax_sub_class" Association="faxModel.FK_fax_sub_class">
+            <End Role="sub_class" EntitySet="sub_class" />
+            <End Role="fax" EntitySet="faxes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_iamges_fax" Association="faxModel.FK_iamges_fax">
+            <End Role="fax" EntitySet="faxes" />
+            <End Role="iamge" EntitySet="iamges" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="fax">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="name_send" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="name_recieve" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="from_date" Type="DateTime" Precision="0" />
+          <Property Name="to_date" Type="DateTime" Precision="0" />
+          <Property Name="serial_fax" Type="Int32" />
+          <Property Name="serial_fax_auto" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sub_class_id" Type="Int32" />
+          <Property Name="person_send_id" Type="Int32" />
+          <Property Name="person_recieve_id" Type="Int32" />
+          <Property Name="is_export" Type="Boolean" />
+          <NavigationProperty Name="person" Relationship="faxModel.FK_fax_person" FromRole="fax" ToRole="person" />
+          <NavigationProperty Name="person1" Relationship="faxModel.FK_fax_person1" FromRole="fax" ToRole="person" />
+          <NavigationProperty Name="sub_class" Relationship="faxModel.FK_fax_sub_class" FromRole="fax" ToRole="sub_class" />
+          <NavigationProperty Name="iamges" Relationship="faxModel.FK_iamges_fax" FromRole="fax" ToRole="iamge" />
+        </EntityType>
+        <EntityType Name="iamge">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="type" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="size" Type="Double" />
+          <Property Name="fax_id" Type="Int32" />
+        </EntityType>
+        <Association Name="FK_fax_person">
+          <End Type="faxModel.person" Role="person" Multiplicity="0..1" />
+          <End Type="faxModel.fax" Role="fax" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fax">
+              <PropertyRef Name="person_send_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_fax_person1">
+          <End Type="faxModel.person" Role="person" Multiplicity="0..1" />
+          <End Type="faxModel.fax" Role="fax" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="person">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fax">
+              <PropertyRef Name="person_recieve_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_fax_sub_class">
+          <End Type="faxModel.sub_class" Role="sub_class" Multiplicity="0..1" />
+          <End Type="faxModel.fax" Role="fax" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="sub_class">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fax">
+              <PropertyRef Name="sub_class_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_iamges_fax">
+          <End Type="faxModel.fax" Role="fax" Multiplicity="0..1" />
+          <End Type="faxModel.iamge" Role="iamge" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="fax">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="iamge">
+              <PropertyRef Name="fax_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="faxModelStoreContainer" CdmEntityContainer="faxEntities">
+        <EntityContainerMapping StorageEntityContainer="faxModelStoreContainer" CdmEntityContainer="DBfax">
           <EntitySetMapping Name="main_class">
             <EntityTypeMapping TypeName="faxModel.main_class">
               <MappingFragment StoreEntitySet="main_class">
@@ -200,6 +388,35 @@
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="id_main_class" ColumnName="id_main_class" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="faxes">
+            <EntityTypeMapping TypeName="faxModel.fax">
+              <MappingFragment StoreEntitySet="fax">
+                <ScalarProperty Name="is_export" ColumnName="is_export" />
+                <ScalarProperty Name="person_recieve_id" ColumnName="person_recieve_id" />
+                <ScalarProperty Name="person_send_id" ColumnName="person_send_id" />
+                <ScalarProperty Name="sub_class_id" ColumnName="sub_class_id" />
+                <ScalarProperty Name="serial_fax_auto" ColumnName="serial_fax_auto" />
+                <ScalarProperty Name="serial_fax" ColumnName="serial_fax" />
+                <ScalarProperty Name="to_date" ColumnName="to_date" />
+                <ScalarProperty Name="from_date" ColumnName="from_date" />
+                <ScalarProperty Name="name_recieve" ColumnName="name_recieve" />
+                <ScalarProperty Name="name_send" ColumnName="name_send" />
+                <ScalarProperty Name="title" ColumnName="title" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="iamges">
+            <EntityTypeMapping TypeName="faxModel.iamge">
+              <MappingFragment StoreEntitySet="iamges">
+                <ScalarProperty Name="fax_id" ColumnName="fax_id" />
+                <ScalarProperty Name="size" ColumnName="size" />
+                <ScalarProperty Name="type" ColumnName="type" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -1,4 +1,5 @@
 ﻿
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Fax_API.Controllers
 {
     public class MainClassController : ApiController
     {
-        private faxEntities db = new faxEntities();
+        private DBfax db = new DBfax();
 
         // GET: api/MainClass
         public IQueryable<main_class> Getmain_class()
@@ -85,17 +86,20 @@ namespace Fax_API.Controllers
 
         // DELETE: api/MainClass/5
         [ResponseType(typeof(main_class))]
-        public async Task<IHttpActionResult> Deletemain_class(int id)
+        public async Task<IHttpActionResult> Deletemain_class([FromUri]IEnumerable<int> ids)
         {
-            main_class main_class = await db.main_class.FindAsync(id);
-            if (main_class == null)
+            main_class main_class = null;
+            foreach (int id in ids)
             {
-                return NotFound();
+                 main_class = await db.main_class.FindAsync(id);
+                if (main_class == null)
+                {
+                    return NotFound();
+                }
+
+                db.main_class.Remove(main_class);
             }
-
-            db.main_class.Remove(main_class);
             await db.SaveChangesAsync();
-
             return Ok(main_class);
         }
 

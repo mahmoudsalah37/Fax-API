@@ -1,5 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Schema Namespace="faxModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="fax">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" Nullable="false" />
+    <Property Name="title" Type="nvarchar(max)" />
+    <Property Name="name_send" Type="nvarchar(max)" />
+    <Property Name="name_recieve" Type="nvarchar(max)" />
+    <Property Name="from_date" Type="date" />
+    <Property Name="to_date" Type="date" />
+    <Property Name="serial_fax" Type="int" />
+    <Property Name="serial_fax_auto" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="sub_class_id" Type="int" />
+    <Property Name="person_send_id" Type="int" />
+    <Property Name="person_recieve_id" Type="int" />
+    <Property Name="is_export" Type="bit" />
+  </EntityType>
+  <EntityType Name="iamges">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" Nullable="false" />
+    <Property Name="name" Type="nvarchar(max)" />
+    <Property Name="type" Type="nvarchar(max)" />
+    <Property Name="size" Type="float" />
+    <Property Name="fax_id" Type="int" />
+  </EntityType>
   <EntityType Name="main_class">
     <Key>
       <PropertyRef Name="id" />
@@ -32,6 +59,54 @@
     <Property Name="name" Type="nvarchar(max)" />
     <Property Name="id_main_class" Type="int" />
   </EntityType>
+  <Association Name="FK_fax_person">
+    <End Role="person" Type="Self.person" Multiplicity="0..1" />
+    <End Role="fax" Type="Self.fax" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="person">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="fax">
+        <PropertyRef Name="person_send_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_fax_person1">
+    <End Role="person" Type="Self.person" Multiplicity="0..1" />
+    <End Role="fax" Type="Self.fax" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="person">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="fax">
+        <PropertyRef Name="person_recieve_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_fax_sub_class">
+    <End Role="sub_class" Type="Self.sub_class" Multiplicity="0..1" />
+    <End Role="fax" Type="Self.fax" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="sub_class">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="fax">
+        <PropertyRef Name="sub_class_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_iamges_fax">
+    <End Role="fax" Type="Self.fax" Multiplicity="0..1" />
+    <End Role="iamges" Type="Self.iamges" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="fax">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="iamges">
+        <PropertyRef Name="fax_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK_person_person">
     <End Role="rank" Type="Self.rank" Multiplicity="0..1">
       <OnDelete Action="Cascade" />
@@ -61,10 +136,28 @@
     </ReferentialConstraint>
   </Association>
   <EntityContainer Name="faxModelStoreContainer">
+    <EntitySet Name="fax" EntityType="Self.fax" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="iamges" EntityType="Self.iamges" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="main_class" EntityType="Self.main_class" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="person" EntityType="Self.person" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="rank" EntityType="Self.rank" Schema="dbo" store:Type="Tables" />
     <EntitySet Name="sub_class" EntityType="Self.sub_class" Schema="dbo" store:Type="Tables" />
+    <AssociationSet Name="FK_fax_person" Association="Self.FK_fax_person">
+      <End Role="person" EntitySet="person" />
+      <End Role="fax" EntitySet="fax" />
+    </AssociationSet>
+    <AssociationSet Name="FK_fax_person1" Association="Self.FK_fax_person1">
+      <End Role="person" EntitySet="person" />
+      <End Role="fax" EntitySet="fax" />
+    </AssociationSet>
+    <AssociationSet Name="FK_fax_sub_class" Association="Self.FK_fax_sub_class">
+      <End Role="sub_class" EntitySet="sub_class" />
+      <End Role="fax" EntitySet="fax" />
+    </AssociationSet>
+    <AssociationSet Name="FK_iamges_fax" Association="Self.FK_iamges_fax">
+      <End Role="fax" EntitySet="fax" />
+      <End Role="iamges" EntitySet="iamges" />
+    </AssociationSet>
     <AssociationSet Name="FK_person_person" Association="Self.FK_person_person">
       <End Role="rank" EntitySet="rank" />
       <End Role="person" EntitySet="person" />

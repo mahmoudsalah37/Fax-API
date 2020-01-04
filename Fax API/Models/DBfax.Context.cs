@@ -13,10 +13,10 @@ namespace Fax_API.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class faxEntities : DbContext
+    public partial class DBfax : DbContext
     {
-        public faxEntities()
-            : base("name=faxEntities")
+        public DBfax()
+            : base("name=DBfax")
         {
         }
     
@@ -29,5 +29,7 @@ namespace Fax_API.Models
         public virtual DbSet<person> people { get; set; }
         public virtual DbSet<rank> ranks { get; set; }
         public virtual DbSet<sub_class> sub_class { get; set; }
+        public virtual DbSet<fax> faxes { get; set; }
+        public virtual DbSet<iamge> iamges { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-  <EntityContainerMapping StorageEntityContainer="faxModelStoreContainer" CdmEntityContainer="faxEntities">
+  <EntityContainerMapping StorageEntityContainer="faxModelStoreContainer" CdmEntityContainer="DBfax">
     <EntitySetMapping Name="main_class">
       <EntityTypeMapping TypeName="faxModel.main_class">
         <MappingFragment StoreEntitySet="main_class">
@@ -34,6 +34,35 @@
           <ScalarProperty Name="id" ColumnName="id" />
           <ScalarProperty Name="name" ColumnName="name" />
           <ScalarProperty Name="id_main_class" ColumnName="id_main_class" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="faxes">
+      <EntityTypeMapping TypeName="faxModel.fax">
+        <MappingFragment StoreEntitySet="fax">
+          <ScalarProperty Name="is_export" ColumnName="is_export" />
+          <ScalarProperty Name="person_recieve_id" ColumnName="person_recieve_id" />
+          <ScalarProperty Name="person_send_id" ColumnName="person_send_id" />
+          <ScalarProperty Name="sub_class_id" ColumnName="sub_class_id" />
+          <ScalarProperty Name="serial_fax_auto" ColumnName="serial_fax_auto" />
+          <ScalarProperty Name="serial_fax" ColumnName="serial_fax" />
+          <ScalarProperty Name="to_date" ColumnName="to_date" />
+          <ScalarProperty Name="from_date" ColumnName="from_date" />
+          <ScalarProperty Name="name_recieve" ColumnName="name_recieve" />
+          <ScalarProperty Name="name_send" ColumnName="name_send" />
+          <ScalarProperty Name="title" ColumnName="title" />
+          <ScalarProperty Name="id" ColumnName="id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="iamges">
+      <EntityTypeMapping TypeName="faxModel.iamge">
+        <MappingFragment StoreEntitySet="iamges">
+          <ScalarProperty Name="fax_id" ColumnName="fax_id" />
+          <ScalarProperty Name="size" ColumnName="size" />
+          <ScalarProperty Name="type" ColumnName="type" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="id" ColumnName="id" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
